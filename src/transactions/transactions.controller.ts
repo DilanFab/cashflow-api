@@ -1,7 +1,9 @@
-import { Body, Controller, Post, Get, Query } from '@nestjs/common';
+import { Body, Controller, Post, Get, Query, UseGuards } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './create-transaction.dto';
+import { SupabaseAuthGuard } from 'src/auth/supabase-auth/supabase-auth.guard';
 
+@UseGuards(SupabaseAuthGuard)
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}

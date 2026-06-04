@@ -41,19 +41,21 @@ Mitigación: aceptado en MVP. Resolver en V1 con keep-alive o migración a Railw
 
 ## 5. Fases de Construcción
 
-### Fase 0 — Backend funcional (3–5 días)
+### Fase 0 — Backend funcional (Completado ✅)
 Objetivo: tener datos reales antes de escribir una línea de Angular.
 
-- [ ] Entorno: Node, NestJS CLI, Prisma, conexión Supabase
-- [ ] Modelo de datos mínimo
-- [ ] CRUD de transacciones
-- [ ] Endpoint de resumen por período
-- [ ] Validación con Thunder Client / Postman
+- [x] Entorno: Node, NestJS CLI, Prisma v7 con Driver Adapter (`@prisma/adapter-pg`), conexión Supabase
+- [x] Modelo de datos mínimo (User, Category, Transaction)
+- [x] CRUD de transacciones
+- [x] Endpoint de resumen por período/usuario (`/transactions/summary`)
+- [x] Validación con Apidog
+- [x] Repositorio de GitHub creado y código inicial subido (`cashflow-api`)
 
-### Fase 1 — Frontend mínimo (1–2 semanas)
-- [ ] Formulario de registro de transacción
-- [ ] Lista de transacciones con filtros básicos
-- [ ] Dashboard con KPIs
+### Fase 1 — Frontend mínimo (En Progreso 🔄)
+- [/] Inicializar proyecto de Angular 22 con soporte standalone y TailwindCSS
+- [ ] Formulario de registro de transacción (Maquetado por Stitch)
+- [ ] Lista de transacciones con filtros básicos (Maquetado por Stitch)
+- [ ] Dashboard con KPIs (Maquetado por Stitch)
 - [ ] Autenticación JWT (al final, no al inicio)
 
 ### Fase 2 — V1 post-validación
@@ -169,14 +171,14 @@ src/
 
 ## 10. Orden de Construcción Recomendado
 
-1. Modelo Prisma + migración inicial
-2. CRUD transacciones (NestJS)
-3. Endpoint dashboard/summary
-4. Frontend: formulario + lista
-5. Frontend: dashboard
-6. Autenticación JWT
-7. Categorías editables
-8. Módulo pendientes/vouchers
+1. **[x] Modelo Prisma + migración inicial**
+2. **[x] CRUD transacciones (NestJS)**
+3. **[x] Endpoint dashboard/summary**
+4. **[/] Frontend: UI básica y setup de TailwindCSS (Diseño por Stitch)**
+5. **[ ] Frontend: Conexión con servicios e integración de datos reales**
+6. **[ ] Autenticación JWT**
+7. **[ ] Categorías editables**
+8. **[ ] Módulo pendientes/vouchers**
 
 > **Principio:** El valor del proyecto está en el flujo financiero, no en el login.
 > Un dashboard financiero funcional con Angular + NestJS + Prisma tiene más peso en portafolio que features secundarias sin profundidad de dominio.
