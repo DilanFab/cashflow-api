@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { TransactionType } from '@prisma/client';
 import { CreateTransactionDto } from './create-transaction.dto';
@@ -7,14 +7,19 @@ import { CreateTransactionDto } from './create-transaction.dto';
 export class TransactionsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreateTransactionDto) {
+  async create(userId: string, data: CreateTransactionDto) {
+    const category = await this.prisma.category.findUnique({
+      where: { id: data.categoryId },
+    });
+    if (!category) throw new NotFoundException('Categoría no encontrada');
+
     return await this.prisma.transaction.create({
       data: {
         amount: data.amount,
         type: data.type,
         status: data.status,
         categoryId: data.categoryId,
-        userId: data.userId,
+        userId,
         description: data.description,
         date: new Date(data.date),
       },
@@ -34,28 +39,23 @@ export class TransactionsService {
   }
 
   async getSummary(userId: string) {
-    const transactions = await this.prisma.transaction.findMany({
+    const grouped = await this.prisma.transaction.groupBy({
+      by: ['type'],
       where: { userId },
+      _sum: { amount: true },
     });
 
-    let totalIncome = 0;
-    let totalExpense = 0;
-
-    transactions.forEach((tx) => {
-      const amount = Number(tx.amount);
-      if (tx.type === TransactionType.INCOME) {
-        totalIncome += amount;
-      } else if (tx.type === TransactionType.EXPENSE) {
-        totalExpense += amount;
-      }
-    });
-
-    const balance = totalIncome - totalExpense;
+    const totalIncome = Number(
+      grouped.find((g) => g.type === TransactionType.INCOME)?._sum.amount ?? 0,
+    );
+    const totalExpense = Number(
+      grouped.find((g) => g.type === TransactionType.EXPENSE)?._sum.amount ?? 0,
+    );
 
     return {
       totalIncome,
       totalExpense,
-      balance,
+      balance: totalIncome - totalExpense,
     };
   }
 }

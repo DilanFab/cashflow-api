@@ -8,11 +8,13 @@ import {
   IsPositive,
 } from 'class-validator';
 import { TransactionStatus, TransactionType } from '@prisma/client';
+import { Type } from 'class-transformer';
 
 export class CreateTransactionDto {
   @IsNumber()
   @IsPositive()
   @IsNotEmpty()
+  @Type(() => Number)
   amount: number;
 
   @IsEnum(TransactionType)
@@ -26,10 +28,6 @@ export class CreateTransactionDto {
   @IsString()
   @IsNotEmpty()
   categoryId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 
   @IsString()
   @IsOptional()

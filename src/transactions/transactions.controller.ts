@@ -1,26 +1,33 @@
-import { Body, Controller, Post, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './create-transaction.dto';
 import { SupabaseAuthGuard } from 'src/auth/supabase-auth/supabase-auth.guard';
+import { CurrentUser } from 'src/auth/current-user.decorator';
 
 @UseGuards(SupabaseAuthGuard)
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
+
   @Post()
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   async create(
-    @Body()
-    createTransactionDto: CreateTransactionDto,
+    @Body() createTransactionDto: CreateTransactionDto,
+    @CurrentUser() user: { id: string },
   ) {
-    return this.transactionsService.create(createTransactionDto);
+    return this.transactionsService.create(user.id, createTransactionDto);
   }
+
   @Get()
-  async findAll(@Query('userId') userId: string) {
-    return this.transactionsService.findAll(userId);
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
+  async findAll(@CurrentUser() user: { id: string }) {
+    return this.transactionsService.findAll(user.id);
   }
 
   @Get('summary')
-  async getSummary(@Query('userId') userId: string) {
-    return this.transactionsService.getSummary(userId);
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  async getSummary(@CurrentUser() user: { id: string }) {
+    return this.transactionsService.getSummary(user.id);
   }
 }
