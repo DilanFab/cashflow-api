@@ -63,19 +63,19 @@ Si **todos** los cambios pertenecen a una sola responsabilidad, un solo commit e
 
 ### 4. Clasificar el tipo de cada commit
 
-| Tipo       | Cuándo usarlo                                              |
-|------------|------------------------------------------------------------|
-| `feat`     | Nueva funcionalidad para el usuario final                  |
-| `fix`      | Corrección de un bug                                       |
-| `refactor` | Cambio de código sin funcionalidad nueva ni bug fix        |
-| `chore`    | Tareas de mantenimiento, dependencias, configs             |
-| `docs`     | Solo cambios en documentación                              |
-| `test`     | Añadir o corregir tests                                    |
-| `perf`     | Mejora de rendimiento                                      |
-| `style`    | Formato, espacios — sin cambio de lógica                   |
-| `ci`       | Cambios en CI/CD                                           |
-| `build`    | Cambios en sistema de build o dependencias externas        |
-| `revert`   | Revertir commit anterior                                   |
+| Tipo | Cuándo usarlo |
+| ------ | ------ |
+| feat | Nueva funcionalidad para el usuario final |
+| fix | Corrección de un bug |
+| refactor | Cambio de código sin funcionalidad nueva ni bug fix |
+| chore | Tareas de mantenimiento, dependencias, configs |
+| docs | Solo cambios en documentación |
+| test | Añadir o corregir tests |
+| perf | Mejora de rendimiento |
+| style | Formato, espacios — sin cambio de lógica |
+| ci | Cambios en CI/CD |
+| build | Cambios en sistema de build o dependencias externas |
+| revert | Revertir commit anterior |
 
 ### 5. Identificar el scope de cada commit
 
