@@ -21,8 +21,8 @@ Una sola frase:
 
 ## 3. Usuarios
 
-Por ahora: **un solo usuario**, sin autenticación compleja.
-La arquitectura soportará multi-usuario en V1, pero el MVP no lo requiere.
+Multi-usuario con autenticación real via **Supabase Auth** (email + contraseña).
+Cada usuario solo ve sus propias transacciones. El JWT de Supabase se valida en el backend en cada petición.
 
 ---
 
@@ -30,9 +30,10 @@ La arquitectura soportará multi-usuario en V1, pero el MVP no lo requiere.
 
 | Capa | Tecnología | Hosting gratuito |
 |---|---|---|
-| Frontend | Angular 20 · Standalone Components · Signals · TailwindCSS | Vercel |
-| Backend | NestJS · Prisma ORM | Render (free tier) |
+| Frontend | Angular 22 · Standalone Components · Signals · TailwindCSS | Vercel |
+| Backend | NestJS · Prisma v7 · @supabase/supabase-js | Render (free tier) |
 | Base de datos | PostgreSQL | Supabase |
+| Autenticación | Supabase Auth (email + contraseña) | Supabase |
 
 **Advertencia conocida:** Render free tier tiene cold start de 30–60 s tras inactividad.
 Mitigación: aceptado en MVP. Resolver en V1 con keep-alive o migración a Railway.
@@ -51,12 +52,26 @@ Objetivo: tener datos reales antes de escribir una línea de Angular.
 - [x] Validación con Apidog
 - [x] Repositorio de GitHub creado y código inicial subido (`cashflow-api`)
 
-### Fase 1 — Frontend mínimo (En Progreso 🔄)
-- [/] Inicializar proyecto de Angular 22 con soporte standalone y TailwindCSS
-- [ ] Formulario de registro de transacción (Maquetado por Stitch)
-- [ ] Lista de transacciones con filtros básicos (Maquetado por Stitch)
-- [ ] Dashboard con KPIs (Maquetado por Stitch)
-- [ ] Autenticación JWT (al final, no al inicio)
+### Fase 0.5 — Autenticación Backend (Completado ✅)
+- [x] Instalar `@supabase/supabase-js` en el backend
+- [x] Crear `AuthModule` con `AuthService` y `SupabaseAuthGuard`
+- [x] `AuthService.verifyToken()` valida JWT con `supabase.auth.getUser(token)`
+- [x] `SupabaseAuthGuard` extrae el Bearer token del header `Authorization`
+- [x] Guard aplicado a `TransactionsController` y `CategoriesController`
+- [x] Rutas devuelven `401 Unauthorized` sin token válido (verificado en Apidog)
+
+### Fase 1 — Frontend Angular (En Progreso 🔄)
+- [x] Inicializar proyecto Angular 22 (`cashflow-ui`) con bun
+- [x] Maqueta visual generada con Google Stitch (dark mode, paleta verde esmeralda)
+- [ ] Configurar TailwindCSS con la paleta de colores de Stitch
+- [ ] Instalar `@supabase/supabase-js` en el frontend
+- [ ] Pantalla de Login con Supabase Auth
+- [ ] Pantalla de Registro con Supabase Auth
+- [ ] Guard de rutas en Angular (redirige al login si no hay sesión)
+- [ ] Interceptor HTTP que adjunta el JWT en cada petición al backend
+- [ ] Pantalla Dashboard con datos reales del backend
+- [ ] Formulario Nueva Transacción conectado al backend
+- [ ] Historial de transacciones con filtros
 
 ### Fase 2 — V1 post-validación
 - [ ] Multi-hogar
@@ -174,11 +189,13 @@ src/
 1. **[x] Modelo Prisma + migración inicial**
 2. **[x] CRUD transacciones (NestJS)**
 3. **[x] Endpoint dashboard/summary**
-4. **[/] Frontend: UI básica y setup de TailwindCSS (Diseño por Stitch)**
-5. **[ ] Frontend: Conexión con servicios e integración de datos reales**
-6. **[ ] Autenticación JWT**
-7. **[ ] Categorías editables**
-8. **[ ] Módulo pendientes/vouchers**
+4. **[x] Autenticación backend con Supabase Auth Guard**
+5. **[/] Frontend: setup TailwindCSS + Supabase Auth (Login/Registro)**
+6. **[ ] Frontend: Guard de rutas + Interceptor HTTP con JWT**
+7. **[ ] Frontend: Dashboard con datos reales**
+8. **[ ] Frontend: Formulario de transacción + historial**
+9. **[ ] Categorías editables**
+10. **[ ] Módulo pendientes/vouchers**
 
 > **Principio:** El valor del proyecto está en el flujo financiero, no en el login.
 > Un dashboard financiero funcional con Angular + NestJS + Prisma tiene más peso en portafolio que features secundarias sin profundidad de dominio.
@@ -187,17 +204,20 @@ src/
 
 ## 11. Próximo Paso Inmediato
 
-Configurar el entorno de desarrollo:
+Desarrollo del frontend Angular (`cashflow-ui`):
 
-```bash
-# Node (recomendado: v20 LTS)
-node --version
+### Contexto del proyecto frontend
+- **Ruta local:** `c:\Users\dil_a\Documents\Program\Personal\cashflow-ui`
+- **Framework:** Angular 22, standalone components, bun como package manager
+- **Estilos:** TailwindCSS con paleta personalizada generada por Google Stitch (dark mode, acento verde esmeralda `#10B981`)
+- **Diseño:** Maqueta HTML completa disponible del panel de Stitch (nombre del proyecto: FinControl)
 
-# NestJS CLI
-npm i -g @nestjs/cli
+### Backend disponible en:
+- `http://localhost:3000` (desarrollo local)
+- Requiere header `Authorization: Bearer <token>` en todas las rutas
+- Endpoints: `POST /transactions`, `GET /transactions?userId=`, `GET /transactions/summary?userId=`, `GET /categories`
 
-# Verificar
-nest --version
-```
-
-Luego: crear el proyecto NestJS y conectar Supabase antes de cualquier otra cosa.
+### Credenciales Supabase (frontend):
+- Instalar `@supabase/supabase-js` en cashflow-ui
+- Usar `SUPABASE_URL` y `SUPABASE_ANON_KEY` (mismas del backend, disponibles en el `.env` del backend)
+- En Angular, las env vars van en `src/environments/environment.ts`
